@@ -1,26 +1,261 @@
 @import "tailwindcss";
 
+/* Default: dark theme + green accent (before JS or when no preference) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #020617;
+  --surface-muted: #0f172a;
+  --surface-raised: #111827;
+  --surface-highlight: #1e293b;
+  --text-primary: #f8fafc;
+  --text-muted: #cbd5e1;
+  --brand-primary: #22c55e;
+  --brand-accent: #4ade80;
+  --focus-ring: #fcd34d;
+}
+
+/* Explicit dark mode */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #020617;
+  --surface-muted: #0f172a;
+  --surface-raised: #111827;
+  --surface-highlight: #1e293b;
+  --text-primary: #f8fafc;
+  --text-muted: #cbd5e1;
+}
+
+/* Explicit light mode */
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #f8fafc;
+  --surface-muted: #e2e8f0;
+  --surface-raised: #ffffff;
+  --surface-highlight: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-muted: #475569;
+}
+
+/* Accent: green (default) */
+[data-accent="green"] {
+  --brand-primary: #22c55e;
+  --brand-accent: #4ade80;
+}
+[data-theme="light"][data-accent="green"] {
+  --brand-primary: #16a34a;
+  --brand-accent: #22c55e;
+}
+
+/* Accent: blue */
+[data-accent="blue"] {
+  --brand-primary: #38bdf8;
+  --brand-accent: #818cf8;
+}
+[data-theme="light"][data-accent="blue"] {
+  --brand-primary: #0ea5e9;
+  --brand-accent: #6366f1;
+}
+
+/* Accent: purple */
+[data-accent="purple"] {
+  --brand-primary: #a78bfa;
+  --brand-accent: #c084fc;
+}
+[data-theme="light"][data-accent="purple"] {
+  --brand-primary: #9333ea;
+  --brand-accent: #a855f7;
+}
+
+/* Accent: amber */
+[data-accent="amber"] {
+  --brand-primary: #fbbf24;
+  --brand-accent: #fcd34d;
+}
+[data-theme="light"][data-accent="amber"] {
+  --brand-primary: #f59e0b;
+  --brand-accent: #eab308;
+}
+
+/* Accent: rose */
+[data-accent="rose"] {
+  --brand-primary: #fb7185;
+  --brand-accent: #f472b6;
+}
+[data-theme="light"][data-accent="rose"] {
+  --brand-primary: #e11d48;
+  --brand-accent: #ec4899;
+}
+
+/* Accent: teal */
+[data-accent="teal"] {
+  --brand-primary: #2dd4bf;
+  --brand-accent: #5eead4;
+}
+[data-theme="light"][data-accent="teal"] {
+  --brand-primary: #0d9488;
+  --brand-accent: #14b8a6;
+}
+
+/* Accent: orange */
+[data-accent="orange"] {
+  --brand-primary: #fb923c;
+  --brand-accent: #fdba74;
+}
+[data-theme="light"][data-accent="orange"] {
+  --brand-primary: #ea580c;
+  --brand-accent: #f97316;
+}
+
+/* Accent: indigo */
+[data-accent="indigo"] {
+  --brand-primary: #818cf8;
+  --brand-accent: #a5b4fc;
+}
+[data-theme="light"][data-accent="indigo"] {
+  --brand-primary: #4f46e5;
+  --brand-accent: #6366f1;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-highlight: var(--surface-highlight);
+  --color-foreground: var(--text-primary);
+  --color-foreground-muted: var(--text-muted);
+  --color-brand: var(--brand-primary);
+  --color-brand-accent: var(--brand-accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(
+      circle at top center,
+      color-mix(in srgb, var(--brand-primary) 12%, transparent),
+      transparent 60%
+    ),
+    var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), "Inter", system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+.header-glow {
+  box-shadow: 0 40px 120px -60px color-mix(in srgb, var(--brand-primary) 35%, transparent);
+}
+
+/* Audio player panel: theme-aware container and play button */
+.audio-player-panel {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--brand-primary) 12%, transparent),
+    0 4px 24px -4px rgba(0, 0, 0, 0.25);
+}
+
+.play-btn-primary {
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--brand-primary) 40%, transparent);
+}
+
+/* Transport bar time display: subtle brand tint */
+.audio-time-display {
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 20%, transparent);
+  color: var(--text-primary);
+}
+
+/* Native <audio> controls: use brand for progress and accent */
+audio.audio-theme,
+.audio-theme audio {
+  accent-color: var(--brand-primary);
+}
+
+audio.audio-theme {
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface-muted) 80%, var(--background));
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+/* Style the audio container in verse cards for consistent theming */
+.audio-theme-wrapper {
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  background: color-mix(in srgb, var(--surface-muted) 60%, var(--background));
+  padding: 0.75rem 1rem;
+}
+
+/* Recite self-check slider: filled track + thumb, theme-aware */
+.recite-slider {
+  --value: 0;
+  height: 0.5rem;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(
+    to right,
+    var(--brand-primary) 0%,
+    var(--brand-primary) calc(var(--value) * 1%),
+    color-mix(in srgb, var(--text-primary) 15%, transparent) calc(var(--value) * 1%),
+    color-mix(in srgb, var(--text-primary) 15%, transparent) 100%
+  );
+  border-radius: 9999px;
+}
+
+.recite-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--background), 0 2px 8px color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.recite-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px var(--background), 0 4px 12px color-mix(in srgb, var(--brand-primary) 55%, transparent);
+}
+
+.recite-slider::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--background), 0 2px 8px color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.recite-slider::-moz-range-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px var(--background), 0 4px 12px color-mix(in srgb, var(--brand-primary) 55%, transparent);
+}
+
+.recite-slider::-moz-range-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  border: none;
+  background: linear-gradient(
+    to right,
+    var(--brand-primary) 0%,
+    var(--brand-primary) calc(var(--value) * 1%),
+    color-mix(in srgb, var(--text-primary) 15%, transparent) calc(var(--value) * 1%),
+    color-mix(in srgb, var(--text-primary) 15%, transparent) 100%
+  );
 }

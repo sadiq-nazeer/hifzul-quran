@@ -1,19 +1,25 @@
 {
-  "name": "quran",
+  "name": "hifzul",
   "version": "0.1.0",
+  "description": "Interactive memorization and reflection experience powered by Quran.Foundation APIs.",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "analyze": "ANALYZE=1 next build"
   },
   "dependencies": {
     "next": "16.0.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "swr": "^2.3.6"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.5.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
