@@ -35,6 +35,15 @@ export type VerseText = {
   textIndopak?: string;
   textImlaeiSimple?: string;
   sajdah?: boolean;
+  words?: VerseWord[];
+};
+
+export type VerseWord = {
+  id: number;
+  position: number;
+  textUthmani: string;
+  audioUrl?: string;
+  charTypeName?: string;
 };
 
 export type AudioFile = {

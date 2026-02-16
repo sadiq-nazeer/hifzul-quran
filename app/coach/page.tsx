@@ -189,7 +189,7 @@ export default function CoachPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12 lg:flex-row">
-      <div className="flex-1 space-y-6">
+      <div className="min-w-0 flex-1 space-y-6">
         <CoachConfigurator
           chapters={chapters}
           reciters={reciters}

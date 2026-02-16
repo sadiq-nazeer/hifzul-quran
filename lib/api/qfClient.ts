@@ -8,6 +8,7 @@ import type {
   TafsirSnippet,
   TranslationSnippet,
   VerseAudio,
+  VerseWord,
   VerseText,
 } from "@/lib/types/quran";
 
@@ -68,8 +69,17 @@ type RawVerse = {
   text_imlaei_simple?: string;
   text_simple?: string;
   text_indopak?: string;
+  words?: RawWord[];
   translations?: RawTranslation[];
   tafsirs?: RawTafsir[];
+};
+
+type RawWord = {
+  id: number;
+  position?: number;
+  text_uthmani?: string;
+  audio_url?: string | null;
+  char_type_name?: string;
 };
 
 type RawAudioPayload = {
@@ -321,6 +331,24 @@ const mapVerse = (raw: RawVerse): VerseText => ({
     ) ?? "",
   textIndopak: pickText(raw.text_indopak, raw.text_simple),
   textImlaeiSimple: pickText(raw.text_imlaei_simple, raw.text_imlaei, raw.text_simple),
+  words: raw.words
+    ?.map((word): VerseWord | undefined => {
+      if (!word || typeof word.id !== "number") {
+        return undefined;
+      }
+      const text = pickText(word.text_uthmani);
+      if (!text) {
+        return undefined;
+      }
+      return {
+        id: word.id,
+        position: typeof word.position === "number" ? word.position : 0,
+        textUthmani: text,
+        audioUrl: word.audio_url ? normalizeAudioUrl(word.audio_url) : undefined,
+        charTypeName: word.char_type_name,
+      };
+    })
+    .filter((word): word is VerseWord => word !== undefined),
 });
 
 const coerceSegments = (
@@ -581,6 +609,8 @@ export const qfApi = {
       per_page: normalizedPerPage,
       page: normalizedPage,
       fields: textFieldRequest,
+      words: "true",
+      word_fields: "text_uthmani,audio_url,char_type_name,position",
     };
 
     if (translationId !== undefined) {
