@@ -193,7 +193,7 @@ export const VerseCard = ({ verse, progress, onProgressChange }: Props) => {
             ) : (
               <>
                 <Ear className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-                Mark listened
+                Listened
               </>
             )}
           </button>
@@ -214,7 +214,7 @@ export const VerseCard = ({ verse, progress, onProgressChange }: Props) => {
             ) : (
               <>
                 <Mic className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-                Whisper quietly
+                Whispered
               </>
             )}
           </button>
