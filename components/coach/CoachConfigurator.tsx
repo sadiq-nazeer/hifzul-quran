@@ -120,7 +120,7 @@ export const CoachConfigurator = ({
           <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
             Surah & range
           </h3>
-          <div className="grid gap-4 sm:grid-cols-[1fr_auto_auto]">
+          <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
             <SearchableSelect
               id="session-surah"
               label="Surah"
@@ -140,34 +140,36 @@ export const CoachConfigurator = ({
                 });
               }}
             />
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-foreground-muted">
-                From
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={maxVerse}
-                className={inputClasses}
-                value={numberField(value.fromVerse, 1)}
-                onChange={handleNumberChange("fromVerse", 1)}
-                aria-label="From verse"
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-foreground-muted">
-                To
-              </span>
-              <input
-                type="number"
-                min={value.fromVerse ?? 1}
-                max={maxVerse}
-                className={inputClasses}
-                value={numberField(value.toVerse, maxVerse)}
-                onChange={handleNumberChange("toVerse", maxVerse)}
-                aria-label="To verse"
-              />
-            </label>
+            <div className="flex gap-4">
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-foreground-muted">
+                  From
+                </span>
+                <input
+                  type="number"
+                  min={1}
+                  max={maxVerse}
+                  className={`${inputClasses} w-20 min-w-0 sm:w-24`}
+                  value={numberField(value.fromVerse, 1)}
+                  onChange={handleNumberChange("fromVerse", 1)}
+                  aria-label="From verse"
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-foreground-muted">
+                  To
+                </span>
+                <input
+                  type="number"
+                  min={value.fromVerse ?? 1}
+                  max={maxVerse}
+                  className={`${inputClasses} w-20 min-w-0 sm:w-24`}
+                  value={numberField(value.toVerse, maxVerse)}
+                  onChange={handleNumberChange("toVerse", maxVerse)}
+                  aria-label="To verse"
+                />
+              </label>
+            </div>
           </div>
         </div>
 

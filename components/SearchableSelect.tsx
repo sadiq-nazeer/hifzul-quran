@@ -148,13 +148,10 @@ export function SearchableSelect<T extends number | string>({
     };
   }, [open]);
 
-  // When opening with searchable, focus the search input
-  useEffect(() => {
-    if (open && searchable) {
-      const t = setTimeout(() => searchInputRef.current?.focus(), 0);
-      return () => clearTimeout(t);
-    }
-  }, [open, searchable]);
+  // Focus search input only when search icon is clicked
+  const handleSearchIconClick = useCallback(() => {
+    searchInputRef.current?.focus();
+  }, []);
 
   // Keep highlightIndex in sync when filtered list or search changes
   useEffect(() => {
@@ -268,9 +265,22 @@ export function SearchableSelect<T extends number | string>({
             }}
           >
             {searchable && (
-              <div className="shrink-0 border-b border-white/10 px-4 py-3">
-                <div className="flex min-h-14 items-center gap-4 rounded-xl border border-brand/20 bg-surface-muted/80 px-5 py-4">
-                  <Search className="h-6 w-6 shrink-0 text-foreground-muted" aria-hidden />
+              <div className="shrink-0 border-b border-white/10 px-1 py-1">
+                <div className="flex min-h-14 items-center gap-3 rounded-xl border border-brand/20 bg-surface-muted/80 px-3 py-2">
+                  <Search 
+                    className="h-6 w-6 shrink-0 cursor-pointer text-foreground-muted transition-colors hover:text-foreground" 
+                    aria-hidden
+                    onClick={handleSearchIconClick}
+                    tabIndex={0}
+                    role="button"
+                    aria-label="Focus search input"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleSearchIconClick();
+                      }
+                    }}
+                  />
                   <input
                     ref={searchInputRef}
                     type="text"

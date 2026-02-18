@@ -83,7 +83,7 @@ export const SurahAudioPanel = ({
 }: Props) => {
   const AYAT_PER_PAGE = 10;
 
-  const [scope, setScope] = useState<PlaybackScope>("session");
+  const [scope, setScope] = useState<PlaybackScope>("surah");
   const [fullSurahTextView, setFullSurahTextView] = useState(true);
   const [fullSurahTextSizeIndex, setFullSurahTextSizeIndex] = useState(1); // 1 = default (medium)
   const [currentAyahHighlight, setCurrentAyahHighlight] =
@@ -269,12 +269,12 @@ export const SurahAudioPanel = ({
 
   const scopeButtons: Array<{ id: PlaybackScope; label: string; disabled?: boolean }> =
     [
-      { id: "session", label: "Current Slice" },
       {
         id: "surah",
         label: "Full Surah",
         disabled: !chapterId,
       },
+      { id: "session", label: "Current Slice" },
     ];
 
   const disablePanel =
