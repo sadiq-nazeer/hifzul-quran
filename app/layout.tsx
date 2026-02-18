@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/Header";
+import { PwaRegister } from "@/components/PwaRegister";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
@@ -24,6 +25,13 @@ export const metadata: Metadata = {
   description:
     "An immersive memorization and recitation coach built with Quran.Foundation APIs.",
   metadataBase: new URL("https://quranic-practice.local"),
+  manifest: "/manifest.webmanifest",
+  themeColor: "#0b0f0e",
+  appleWebApp: {
+    capable: true,
+    title: "HifzDeen",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title: "HifzDeen",
     description:
@@ -48,6 +56,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.className} ${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        <PwaRegister />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){var t=localStorage.getItem('hifzdeen-theme');var a=localStorage.getItem('hifzdeen-accent');var r=t==='light'?'light':'dark';document.documentElement.setAttribute('data-theme',r);document.documentElement.setAttribute('data-accent',a||'green');})();`,

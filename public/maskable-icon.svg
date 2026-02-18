@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="HifzDeen">
+  <defs>
+    <linearGradient id="g" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7ae2c2"/>
+      <stop offset="1" stop-color="#1ea77c"/>
+    </linearGradient>
+  </defs>
+  <!-- Maskable: keep safe padding; no rounded-corner clipping assumptions -->
+  <rect x="0" y="0" width="512" height="512" fill="#0b0f0e"/>
+  <circle cx="256" cy="256" r="212" fill="url(#g)" opacity="0.14"/>
+  <path fill="url(#g)" d="M162 350c0-88 61-158 145-158 64 0 116 41 137 97 4 10-1 21-11 25l-18 7c-10 4-21-1-25-11-16-39-50-64-83-64-51 0-89 45-89 104v12h104c11 0 20 9 20 20v18c0 11-9 20-20 20H182c-11 0-20-9-20-20v-50z"/>
+  <path fill="#e6f3ef" opacity="0.92" d="M168 174c45-48 100-72 164-72 21 0 40 2 58 7 10 2 16 12 14 22l-4 20c-2 10-12 16-22 14-15-3-30-5-46-5-47 0-87 17-120 50-8 8-21 8-29 0l-9-9c-8-8-8-21-0-29z"/>
+</svg>
+
