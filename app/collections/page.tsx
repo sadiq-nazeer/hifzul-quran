@@ -31,7 +31,7 @@ export default function CollectionsPage() {
 
   if (status === "loading") {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-12">
+      <main className="mx-auto max-w-6xl px-6 pb-12 pt-6">
         <p className="text-muted-foreground">Loading collections…</p>
       </main>
     );
@@ -39,7 +39,7 @@ export default function CollectionsPage() {
 
   if (status === "unauthenticated") {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-12">
+      <main className="mx-auto max-w-6xl px-6 pb-12 pt-6">
         <p className="text-muted-foreground">Sign in to view your collections.</p>
         <Link
           href="/api/auth/login"
@@ -53,7 +53,7 @@ export default function CollectionsPage() {
 
   if (status === "error") {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-12">
+      <main className="mx-auto max-w-6xl px-6 pb-12 pt-6">
         <p className="text-muted-foreground">Unable to load collections.</p>
       </main>
     );
@@ -61,7 +61,7 @@ export default function CollectionsPage() {
 
   const collections = data?.collections ?? [];
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
+    <main className="mx-auto max-w-6xl px-6 pb-12 pt-6">
       <h1 className="text-2xl font-semibold text-foreground">Collections</h1>
       {collections.length === 0 ? (
         <p className="mt-4 text-muted-foreground">No collections yet.</p>

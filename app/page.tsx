@@ -49,7 +49,7 @@ const upcomingFeatures = [
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-16 px-6 py-16 lg:px-12">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-16 px-6 pb-16 pt-6 lg:px-12">
       <Hero
         title="HifzDeen"
         description="An immersive platform for Quran memorization, recitation, and listening. Experience the Holy Quran with beautiful recitations, translations, and interactive learning tools."

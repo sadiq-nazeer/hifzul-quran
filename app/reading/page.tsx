@@ -55,7 +55,7 @@ export default function ReadingPage() {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12 lg:px-20 xl:px-24">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 pb-12 pt-6 lg:px-20 xl:px-24">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/15 text-brand">
           <BookOpen className="h-6 w-6" />

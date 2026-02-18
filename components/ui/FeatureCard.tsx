@@ -21,11 +21,11 @@ export function FeatureCard({
 }: FeatureCardProps) {
   return (
     <article
-      className={`group flex flex-col justify-between rounded-2xl border border-foreground/10 bg-surface-muted/70 p-6 transition hover:border-brand/30 hover:bg-surface-muted/90 ${className}`}
+      className={`islamic-card group flex flex-col justify-between rounded-2xl border border-foreground/10 bg-surface-muted/70 p-6 transition duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:bg-surface-muted/90 hover:shadow-lg hover:shadow-black/10 ${className}`}
     >
       <div>
         {icon && (
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand/15 text-brand">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand shadow-sm">
             {icon}
           </div>
         )}

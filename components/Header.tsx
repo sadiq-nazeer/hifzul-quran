@@ -21,7 +21,7 @@ export async function Header() {
             href="/"
             className="text-lg font-semibold text-foreground no-underline transition hover:text-brand sm:text-xl"
           >
-            HifzDeen
+            HifzDeen.com
           </Link>
           <nav className="hidden items-center gap-4 sm:flex">
             <Link

@@ -25,7 +25,7 @@ export function Hero({
 }: HeroProps) {
   return (
     <header
-      className={`rounded-3xl border border-foreground/10 bg-surface-raised/80 px-8 py-10 header-glow backdrop-blur ${className}`}
+      className={`islamic-hero header-glow rounded-3xl border border-foreground/10 bg-surface-raised/80 px-8 py-10 backdrop-blur ${className}`}
     >
       <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
         {title}
