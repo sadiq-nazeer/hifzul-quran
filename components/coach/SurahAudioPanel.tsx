@@ -351,14 +351,14 @@ export const SurahAudioPanel = ({
                 enableDragging={true}
               />
               <div className="mt-3 px-4">
-                <div className="min-w-0 flex-1">
+                {/* <div className="min-w-0 flex-1">
                   <p className="truncate text-xs font-medium text-foreground-muted">
                     {nextLabel}
                   </p>
                   <p className="truncate text-xs text-foreground/80">
                     Queue: {activePlaylist.length} ayat · ~{formatDuration(totalDuration)}
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           )}
@@ -425,7 +425,7 @@ export const SurahAudioPanel = ({
                 </div>
                 {currentTrack && (
                   <p className="mt-2 text-xs text-foreground-muted">
-                    Now playing: Ayah {currentTrack.orderInChapter}
+                    Now playing: {nextLabel}
                   </p>
                 )}
                 <div className="mt-3 flex items-center justify-center gap-2">
@@ -456,7 +456,7 @@ export const SurahAudioPanel = ({
               <div>
                 {currentTrack && (
                   <p className="mb-1 text-xs font-semibold text-foreground-muted">
-                    Now playing • Ayah {currentTrack.orderInChapter}
+                    Now playing • {nextLabel}
                   </p>
                 )}
                 <div className="now-playing-card rounded-xl border-l-4 border-brand bg-surface-highlight/50 p-4 text-foreground">

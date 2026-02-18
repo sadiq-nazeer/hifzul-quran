@@ -17,8 +17,9 @@ This must be the **exact** URL where users land after signing in at Quran Founda
 - **Local development:**  
   `QF_OAUTH_REDIRECT_URI=http://localhost:3000/api/auth/callback`
 - **Production:**  
-  Use your real origin and path, e.g.  
-  `QF_OAUTH_REDIRECT_URI=https://your-domain.com/api/auth/callback`
+  Use your real origin. You can use either path:
+  - `QF_OAUTH_REDIRECT_URI=https://your-domain.com/api/auth/callback` (default), or
+  - `QF_OAUTH_REDIRECT_URI=https://your-domain.com/oauth/callback` (rewritten internally to the same handler; register this URL with the provider if you use it).
 
 Rules from the docs:
 
