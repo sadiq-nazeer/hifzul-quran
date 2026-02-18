@@ -110,7 +110,8 @@ Use the same environment as the one in which your client and redirect URI are co
 
 | Issue | What to check |
 |-------|----------------|
-| `redirect_uri_mismatch` | Registered redirect URI and `QF_OAUTH_REDIRECT_URI` must match exactly (including `http` vs `https`, port, path). |
+| `redirect_uri` does not match pre-registered / `invalid_request` | `QF_OAUTH_REDIRECT_URI` on the server must be **identical** to a registered redirect URL: same scheme (`https`), host (e.g. `hifzdeen.com` vs `www.hifzdeen.com`), path, no trailing slash unless registered with one. Add that exact URL to your client’s allowed redirect URIs if missing. |
+| `redirect_uri_mismatch` | Same as above: registered redirect URI and `QF_OAUTH_REDIRECT_URI` must match exactly (including `http` vs `https`, port, path). |
 | “Missing QF_OAUTH_COOKIE_SECRET” | Set `QF_OAUTH_COOKIE_SECRET` in `.env.local` and restart the dev server. |
 | “Missing QF_OAUTH_REDIRECT_URI” | Set `QF_OAUTH_REDIRECT_URI` in `.env.local` and restart the dev server. |
 | Invalid grant / 401 after callback | Don’t reuse the same authorization code; use prelive vs production consistently; check system time (clock skew). |

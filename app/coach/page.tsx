@@ -1,4 +1,5 @@
 "use client";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CoachConfigurator } from "@/components/coach/CoachConfigurator";
 import { CoachSessionTimeline } from "@/components/coach/CoachSessionTimeline";
@@ -29,6 +30,10 @@ export default function CoachPage() {
   });
   const [progress, setProgress] = useState<Record<string, VerseProgress>>({});
   const [historyTrigger, setHistoryTrigger] = useState("");
+  /** Ayah section expanded state (verseKey -> expanded). Default collapsed. */
+  const [expandedAyahs, setExpandedAyahs] = useState<Record<string, boolean>>({});
+  /** Whether the ayah cards section is visible. Toggle hides it fully (no container). */
+  const [showAyahCards, setShowAyahCards] = useState(true);
 
   useEffect(() => {
     if (params.chapterId || !chapters.length) {
@@ -73,8 +78,10 @@ export default function CoachPage() {
 
     if (!verses.length) {
       setProgress({});
+      setExpandedAyahs({});
       return;
     }
+    setExpandedAyahs({});
     setProgress((prev: Record<string, VerseProgress>) => {
       const updated: Record<string, VerseProgress> = {};
       verses.forEach((verse) => {
@@ -188,7 +195,7 @@ export default function CoachPage() {
     : undefined;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12 lg:flex-row">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12 lg:px-20 xl:px-24">
       <div className="min-w-0 flex-1 space-y-6">
         <CoachConfigurator
           chapters={chapters}
@@ -205,6 +212,22 @@ export default function CoachPage() {
           reciterId={params.reciterId}
           reciterName={selectedReciter?.name}
         />
+        <button
+          type="button"
+          onClick={() => setShowAyahCards((v) => !v)}
+          className="flex items-center gap-2 text-sm text-foreground-muted hover:text-foreground"
+          aria-pressed={showAyahCards}
+        >
+          {showAyahCards ? "Hide Ayah cards" : "Show Ayah cards"}
+          <span className="shrink-0 text-foreground-muted" aria-hidden>
+            {showAyahCards ? (
+              <ChevronUp className="h-5 w-5" strokeWidth={2} />
+            ) : (
+              <ChevronDown className="h-5 w-5" strokeWidth={2} />
+            )}
+          </span>
+        </button>
+        {showAyahCards && (
         <div className="space-y-6">
           {isIdle && !params.chapterId && (
             <p className="rounded-3xl border border-dashed border-white/10 p-6 text-sm text-foreground-muted">
@@ -238,18 +261,54 @@ export default function CoachPage() {
             </p>
           )}
 
-          {verses.map((verse) => (
-            <VerseCard
-              key={verse.verse.verseKey}
-              verse={verse}
-              progress={progress[verse.verse.verseKey] ?? { listened: false, whispered: false }}
-              onProgressChange={(update) => handleProgressChange(verse.verse.verseKey, update)}
-            />
-          ))}
+          {verses.map((verse) => {
+            const verseKey = verse.verse.verseKey;
+            const isExpanded = expandedAyahs[verseKey] ?? false;
+            const sectionId = `ayah-section-${verseKey.replace(":", "-")}`;
+            return (
+              <section
+                key={verseKey}
+                className="rounded-3xl border border-white/5 bg-surface-raised/30 overflow-hidden"
+                aria-labelledby={sectionId}
+              >
+                <button
+                  type="button"
+                  id={sectionId}
+                  className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 md:px-5 md:py-4"
+                  onClick={() =>
+                    setExpandedAyahs((prev) => ({ ...prev, [verseKey]: !prev[verseKey] }))
+                  }
+                  aria-expanded={isExpanded}
+                >
+                  <span className="text-sm font-semibold text-foreground">
+                    {selectedChapter?.nameSimple
+                      ? `${selectedChapter.nameSimple} · Ayah ${verse.orderInChapter}`
+                      : `Ayah ${verse.orderInChapter}`}
+                  </span>
+                  <span className="shrink-0 text-foreground-muted" aria-hidden>
+                    {isExpanded ? (
+                      <ChevronUp className="h-5 w-5" strokeWidth={2} />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" strokeWidth={2} />
+                    )}
+                  </span>
+                </button>
+                {isExpanded && (
+                  <VerseCard
+                    verse={verse}
+                    progress={progress[verseKey] ?? { listened: false, whispered: false }}
+                    onProgressChange={(update) => handleProgressChange(verseKey, update)}
+                    chapterName={selectedChapter?.nameSimple}
+                  />
+                )}
+              </section>
+            );
+          })}
         </div>
+        )}
       </div>
 
-      <div className="w-full space-y-6 lg:w-80">
+      <div className="w-full space-y-6">
         <section className="rounded-3xl border border-white/5 bg-surface-raised/70 p-6 text-sm text-foreground">
           <p className="text-xs uppercase tracking-[0.4em] text-foreground-muted">
             Session pulse
