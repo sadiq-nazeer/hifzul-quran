@@ -33,6 +33,15 @@ export function Hero({
       <p className="mt-4 max-w-2xl text-lg text-foreground-muted">
         {description}
       </p>
+      <p className="mt-2 max-w-2xl text-base text-foreground-muted">
+        <em>
+          As our first release, we&apos;re excited to introduce these core
+          features to support your Quran journey, rooted in a deep love for
+          Islam and the words of Allah. Insha Allah, many more capabilities and
+          rich content are on the way. For now, our primary focus is helping you
+          recite and memorize the Quran effectively.
+        </em>
+      </p>
       {(showHifzButton || primaryAction || secondaryAction) && (
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
           {showHifzButton && (

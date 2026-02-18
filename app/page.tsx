@@ -1,4 +1,5 @@
 import { BookOpen, Headphones, GraduationCap, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Hero } from "@/components/ui/Hero";
 import { Section } from "@/components/ui/Section";
@@ -89,6 +90,21 @@ export default function Home() {
           ))}
         </div>
       </Section>
+
+      <footer className="mt-4 border-t border-foreground/10 pt-4 text-xs text-foreground-muted">
+        <p className="text-center">
+          Developed with love ❤️ for the Quran by{" "}
+          <Link
+            href="https://www.sadiqn.com"
+            className="font-medium text-foreground underline-offset-4 hover:text-brand hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Sadiq Nazeer
+          </Link>
+          .
+        </p>
+      </footer>
     </main>
   );
 }
