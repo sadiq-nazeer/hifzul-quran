@@ -308,9 +308,9 @@ export const AudioPlayer = ({
       ) : null}
       
       {/* Transport bar: time display + play controls */}
-      <div className="flex flex-wrap items-center gap-4 border-b border-white/5 px-4 py-3 sm:flex-nowrap">
+      <div className="flex flex-wrap items-center gap-4 border-b border-foreground/10 px-4 py-3 sm:flex-nowrap">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="audio-time-display flex shrink-0 items-center gap-1.5 rounded-xl bg-black/20 px-3 py-2 font-mono text-sm tabular-nums">
+          <div className="audio-time-display flex shrink-0 items-center gap-1.5 rounded-xl bg-foreground/10 px-3 py-2 font-mono text-sm tabular-nums">
             <span className="text-foreground">{formatTime(displayTime)}</span>
             <span className="text-foreground-muted">/</span>
             <span className="text-brand">
@@ -347,7 +347,7 @@ export const AudioPlayer = ({
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition disabled:opacity-50 ${
               loopSelection
                 ? "border-brand bg-brand/20 text-brand"
-                : "border-white/20 bg-white/5 text-foreground-muted hover:border-white/30 hover:bg-white/10 hover:text-foreground"
+                : "border-foreground/20 bg-foreground/5 text-foreground-muted hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground"
             }`}
             onClick={toggleLoop}
             disabled={disabled}
@@ -375,7 +375,7 @@ export const AudioPlayer = ({
           {showStopButton && (
             <button
               type="button"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/5 text-foreground-muted transition hover:border-white/30 hover:bg-white/10 hover:text-foreground disabled:opacity-50"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/20 bg-foreground/5 text-foreground-muted transition hover:border-foreground/30 hover:bg-foreground/10 hover:text-foreground disabled:opacity-50"
               onClick={stopPlayback}
               disabled={disabled}
               aria-label="Stop"
@@ -409,15 +409,15 @@ export const AudioPlayer = ({
               aria-valuemax={effectiveDuration}
               onClick={handleProgressClick}
             >
-              <div className="relative h-1.5 w-full rounded-full bg-white/10 transition hover:bg-white/15">
+              <div className="relative h-2.5 w-full rounded-full bg-surface-highlight/80 shadow-inner ring-1 ring-foreground/15 transition hover:bg-surface-highlight">
                 <div
-                  className="absolute inset-0 h-full w-full origin-left rounded-full bg-brand"
+                  className="absolute inset-0 h-full w-full origin-left rounded-full bg-brand shadow-[0_0_0_1px_rgba(0,0,0,0.04)]"
                   style={{
                     transform: `scaleX(${progressRatio})`,
                   }}
                 />
                 <div
-                  className="absolute top-1/2 z-10 cursor-grab rounded-full bg-brand shadow-md shadow-brand/40 ring-2 ring-white/20 transition hover:scale-110 active:cursor-grabbing"
+                  className="absolute top-1/2 z-10 cursor-grab rounded-full bg-brand shadow-md shadow-brand/40 ring-2 ring-background/80 transition hover:scale-110 active:cursor-grabbing"
                   style={{
                     left: `${progressRatio * 100}%`,
                     transform: "translate(-50%, -50%)",
@@ -434,7 +434,7 @@ export const AudioPlayer = ({
             </div>
           ) : (
             <div
-              className="h-1 w-full overflow-hidden rounded-full bg-white/10"
+              className="h-2 w-full overflow-hidden rounded-full bg-surface-highlight/70 shadow-inner ring-1 ring-foreground/10"
               role="progressbar"
               aria-valuenow={displayTime}
               aria-valuemin={0}

@@ -227,8 +227,18 @@ audio.audio-theme,
 audio.audio-theme {
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--surface-muted) 80%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--text-primary) 18%, transparent);
   padding: 0.5rem 0.75rem;
   width: 100%;
+}
+
+/* Make native audio timeline visible in light mode (Chromium/WebKit). */
+audio.audio-theme::-webkit-media-controls-timeline {
+  filter: contrast(1.25) saturate(1.1);
+}
+
+[data-theme="light"] audio.audio-theme::-webkit-media-controls-panel {
+  background: color-mix(in srgb, var(--surface-muted) 75%, var(--background));
 }
 
 /* Style the audio container in verse cards for consistent theming */

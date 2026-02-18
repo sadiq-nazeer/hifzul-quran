@@ -84,7 +84,7 @@ export const SurahAudioPanel = ({
   const AYAT_PER_PAGE = 10;
 
   const [scope, setScope] = useState<PlaybackScope>("surah");
-  const [fullSurahTextView, setFullSurahTextView] = useState(true);
+  const [fullSurahTextView, setFullSurahTextView] = useState(false);
   const [fullSurahTextSizeIndex, setFullSurahTextSizeIndex] = useState(1); // 1 = default (medium)
   const [currentAyahHighlight, setCurrentAyahHighlight] =
     useState<CurrentAyahHighlight>("brand");
@@ -195,7 +195,7 @@ export const SurahAudioPanel = ({
       setFullSurahTextView(false);
       setSurahPage(0);
     } else if (scope === "surah") {
-      setFullSurahTextView(true);
+      setFullSurahTextView(false);
     }
   }, [playlistSignature, scope]);
 
@@ -274,14 +274,14 @@ export const SurahAudioPanel = ({
         label: "Full Surah",
         disabled: !chapterId,
       },
-      { id: "session", label: "Current Slice" },
+      { id: "session", label: "Surah Range" },
     ];
 
   const disablePanel =
     (isSurahScope && (!chapterId || surahError)) || activePlaylist.length === 0;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-surface-raised/80 p-4 shadow-sm md:p-6">
+    <section className="rounded-3xl border border-foreground/10 bg-surface-raised/80 p-4 shadow-sm md:p-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-foreground-muted">
@@ -306,8 +306,8 @@ export const SurahAudioPanel = ({
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                   scope === button.id
                     ? "bg-brand text-black"
-                    : "bg-white/10 text-foreground"
-                } ${button.disabled ? "opacity-40" : "hover:bg-white/20"}`}
+                    : "bg-foreground/5 text-foreground"
+                } ${button.disabled ? "opacity-40" : "hover:bg-foreground/10"}`}
                 onClick={() => setScope(button.id)}
               >
                 {button.label}
@@ -319,8 +319,8 @@ export const SurahAudioPanel = ({
               type="button"
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
                 fullSurahTextView
-                  ? "bg-white/15 text-foreground"
-                  : "bg-white/10 text-foreground hover:bg-white/20"
+                  ? "bg-foreground/10 text-foreground"
+                  : "bg-foreground/5 text-foreground hover:bg-foreground/10"
               }`}
               onClick={() => setFullSurahTextView((prev) => !prev)}
             >
@@ -331,15 +331,15 @@ export const SurahAudioPanel = ({
       </header>
 
       {scope === "session" && onRangeChange && chapterId != null && versesCount > 0 && (
-        <div className="mt-4 rounded-2xl border border-white/10 bg-surface-muted/30 overflow-hidden">
+        <div className="mt-4 rounded-2xl border border-foreground/10 bg-surface-muted/30 overflow-hidden">
           <button
             type="button"
-            className="flex w-full items-center justify-between gap-3 p-3 text-left transition hover:bg-white/5 md:p-4"
+            className="flex w-full items-center justify-between gap-3 p-3 text-left transition hover:bg-foreground/5 md:p-4"
             onClick={() => setSessionRangeExpanded((prev) => !prev)}
             aria-expanded={sessionRangeExpanded}
           >
             <span className="text-xs font-semibold uppercase tracking-wider text-foreground-muted">
-              Session range
+              Surah Range
             </span>
             <span className="shrink-0 text-foreground-muted" aria-hidden>
               {sessionRangeExpanded ? (
@@ -350,7 +350,7 @@ export const SurahAudioPanel = ({
             </span>
           </button>
           {sessionRangeExpanded && (
-            <div className="border-t border-white/10 p-3 md:p-4">
+            <div className="border-t border-foreground/10 p-3 md:p-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <p className="text-sm text-foreground-muted">
                   Current: Ayah {clampVerse(fromVerse, 1, versesCount)} – {clampVerse(toVerse, 1, versesCount)}
@@ -367,7 +367,7 @@ export const SurahAudioPanel = ({
                       type="number"
                       min={1}
                       max={versesCount}
-                      className="w-20 rounded-xl border border-white/10 bg-surface-raised/80 px-3 py-2 text-sm text-foreground outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                      className="w-20 rounded-xl border border-foreground/10 bg-surface-raised/80 px-3 py-2 text-sm text-foreground outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                       value={clampVerse(fromVerse, 1, versesCount)}
                       onChange={(e) => {
                         const from = clampVerse(Number(e.target.value), 1, versesCount);
@@ -382,7 +382,7 @@ export const SurahAudioPanel = ({
                       type="number"
                       min={clampVerse(fromVerse, 1, versesCount)}
                       max={versesCount}
-                      className="w-20 rounded-xl border border-white/10 bg-surface-raised/80 px-3 py-2 text-sm text-foreground outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                      className="w-20 rounded-xl border border-foreground/10 bg-surface-raised/80 px-3 py-2 text-sm text-foreground outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
                       value={clampVerse(toVerse, 1, versesCount)}
                       onChange={(e) => {
                         const to = clampVerse(Number(e.target.value), clampVerse(fromVerse, 1, versesCount), versesCount);
@@ -399,13 +399,13 @@ export const SurahAudioPanel = ({
       )}
 
       {isSurahScope && !chapterId && (
-        <p className="mt-4 rounded-2xl border border-dashed border-white/10 p-3 text-sm md:p-4 text-foreground-muted">
+        <p className="mt-4 rounded-2xl border border-dashed border-foreground/15 p-3 text-sm md:p-4 text-foreground-muted">
           Pick a surah to unlock the full-length playback queue.
         </p>
       )}
 
       {isSurahScope && isLoadingSurah && (
-        <p className="mt-4 rounded-2xl border border-white/5 p-3 text-sm text-foreground-muted md:p-4">
+        <p className="mt-4 rounded-2xl border border-foreground/10 p-3 text-sm text-foreground-muted md:p-4">
           Assembling full surah audio…
         </p>
       )}
@@ -495,11 +495,11 @@ export const SurahAudioPanel = ({
                     <span className="text-xs text-foreground-muted">
                       Text size:
                     </span>
-                    <div className="flex items-center rounded-lg border border-white/10 bg-white/5">
+                    <div className="flex items-center rounded-lg border border-foreground/10 bg-foreground/5">
                       <button
                         type="button"
                         disabled={fullSurahTextSizeIndex <= FULL_SURAH_TEXT_SIZE_MIN}
-                        className="rounded-l-lg p-1.5 text-foreground transition hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-transparent"
+                        className="rounded-l-lg p-1.5 text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-transparent"
                         onClick={() =>
                           setFullSurahTextSizeIndex((i) =>
                             Math.max(FULL_SURAH_TEXT_SIZE_MIN, i - 1)
@@ -512,7 +512,7 @@ export const SurahAudioPanel = ({
                       <button
                         type="button"
                         disabled={fullSurahTextSizeIndex >= FULL_SURAH_TEXT_SIZE_MAX}
-                        className="rounded-r-lg border-l border-white/10 p-1.5 text-foreground transition hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-transparent"
+                        className="rounded-r-lg border-l border-foreground/10 p-1.5 text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-transparent"
                         onClick={() =>
                           setFullSurahTextSizeIndex((i) =>
                             Math.min(FULL_SURAH_TEXT_SIZE_MAX, i + 1)
@@ -533,14 +533,14 @@ export const SurahAudioPanel = ({
                       <span className="sr-only">Highlight color</span>
                       <button
                         type="button"
-                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-foreground transition hover:bg-white/10"
+                        className="flex items-center gap-2 rounded-lg border border-foreground/10 bg-foreground/5 px-2.5 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground/10"
                         onClick={() => setHighlightDropdownOpen((open) => !open)}
                         aria-expanded={highlightDropdownOpen}
                         aria-haspopup="listbox"
                         aria-label={`Highlight: ${AYAH_HIGHLIGHT_OPTIONS.find((o) => o.id === currentAyahHighlight)?.label ?? "Theme"}`}
                       >
                         <span
-                          className={`h-3.5 w-3.5 shrink-0 rounded-sm border border-white/20 ${AYAH_HIGHLIGHT_OPTIONS.find((o) => o.id === currentAyahHighlight)?.swatchClass ?? "bg-brand"}`}
+                          className={`h-3.5 w-3.5 shrink-0 rounded-sm border border-foreground/20 ${AYAH_HIGHLIGHT_OPTIONS.find((o) => o.id === currentAyahHighlight)?.swatchClass ?? "bg-brand"}`}
                           aria-hidden
                         />
                         <span className="text-foreground-muted">
@@ -549,7 +549,7 @@ export const SurahAudioPanel = ({
                       </button>
                       {highlightDropdownOpen && (
                         <ul
-                          className="absolute right-0 top-full z-10 mt-1 min-w-[8rem] rounded-lg border border-white/10 bg-surface-raised py-1 shadow-lg"
+                          className="absolute right-0 top-full z-10 mt-1 min-w-[8rem] rounded-lg border border-foreground/10 bg-surface-raised py-1 shadow-lg"
                           role="listbox"
                           aria-label="Highlight color options"
                         >
@@ -557,14 +557,14 @@ export const SurahAudioPanel = ({
                             <li key={opt.id} role="option" aria-selected={currentAyahHighlight === opt.id}>
                               <button
                                 type="button"
-                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-medium text-foreground transition hover:bg-white/10"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-medium text-foreground transition hover:bg-foreground/10"
                                 onClick={() => {
                                   setCurrentAyahHighlight(opt.id);
                                   setHighlightDropdownOpen(false);
                                 }}
                               >
                                 <span
-                                  className={`h-4 w-4 shrink-0 rounded border border-white/20 ${opt.swatchClass}`}
+                                  className={`h-4 w-4 shrink-0 rounded border border-foreground/20 ${opt.swatchClass}`}
                                   aria-hidden
                                 />
                                 {opt.label}
@@ -576,7 +576,7 @@ export const SurahAudioPanel = ({
                     </div>
                   </div>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-surface-muted/30 p-3 md:p-4">
+                <div className="rounded-xl border border-foreground/10 bg-surface-muted/30 p-3 md:p-4">
                   <div
                     className={`surah-paragraph text-center text-foreground ${FULL_SURAH_TEXT_SIZES[fullSurahTextSizeIndex]}`}
                     dir="rtl"
@@ -617,7 +617,7 @@ export const SurahAudioPanel = ({
                   <button
                     type="button"
                     disabled={safeSurahPage <= 0}
-                    className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-white/5"
+                    className="rounded-lg border border-foreground/10 bg-foreground/5 px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-foreground/5"
                     onClick={() => setSurahPage((p) => Math.max(0, p - 1))}
                   >
                     Previous
@@ -628,7 +628,7 @@ export const SurahAudioPanel = ({
                   <button
                     type="button"
                     disabled={safeSurahPage >= surahTotalPages - 1}
-                    className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-white/10 disabled:opacity-40 disabled:hover:bg-white/5"
+                    className="rounded-lg border border-foreground/10 bg-foreground/5 px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-foreground/5"
                     onClick={() =>
                       setSurahPage((p) => Math.min(surahTotalPages - 1, p + 1))
                     }
@@ -660,7 +660,7 @@ export const SurahAudioPanel = ({
       )}
 
       {!activePlaylist.length && !(isSurahScope && !chapterId) && (
-        <p className="mt-4 rounded-2xl border border-dashed border-white/10 p-3 text-sm md:p-4 text-foreground-muted">
+        <p className="mt-4 rounded-2xl border border-dashed border-foreground/15 p-3 text-sm md:p-4 text-foreground-muted">
           This selection does not have audio yet. Try another reciter or adjust the
           ayah range.
         </p>

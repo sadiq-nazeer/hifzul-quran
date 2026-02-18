@@ -4,15 +4,7 @@ import { SearchableSelect } from "@/components/SearchableSelect";
 import type { CoachBundleParams } from "@/lib/hooks/useCoachBundle";
 import type { ChapterSummary, ReciterProfile } from "@/lib/types/quran";
 
-const translationOptions = [
-  { id: 20, label: "Sahih International (EN)" },
-  { id: 131, label: "Dr. Mustafa Khattab (EN)" },
-];
-
-const tafsirOptions = [
-  { id: 169, label: "Tafsir Ibn Kathir (EN excerpt)" },
-  { id: 168, label: "Al-Jalalayn (EN excerpt)" },
-];
+const SAHIH_INTERNATIONAL_ID = 20;
 
 type Props = {
   chapters: ChapterSummary[];
@@ -20,6 +12,8 @@ type Props = {
   value: CoachBundleParams;
   onChange: (value: CoachBundleParams) => void;
   isLoadingVerses: boolean;
+  showHeader?: boolean;
+  showContent?: boolean;
 };
 
 const numberField = (
@@ -38,6 +32,8 @@ export const CoachConfigurator = ({
   value,
   onChange,
   isLoadingVerses,
+  showHeader = true,
+  showContent = true,
 }: Props) => {
   const selectedChapter = useMemo(
     () => chapters.find((chapter) => chapter.id === value.chapterId),
@@ -84,35 +80,34 @@ export const CoachConfigurator = ({
   return (
     <section className="overflow-hidden rounded-3xl border border-white/5 bg-surface-raised/60 shadow-xl shadow-brand/5">
       {/* Header with accent bar */}
-      <div className="border-b border-white/5 bg-surface-muted/30 px-6 py-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand/15 text-brand">
-              <SlidersHorizontal className="h-6 w-6" aria-hidden />
+      {showHeader && (
+        <div className="border-b border-white/5 bg-surface-muted/30 px-6 py-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand/15 text-brand">
+                <SlidersHorizontal className="h-6 w-6" aria-hidden />
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.35em] text-foreground-muted">
+                  Session Setup
+                </p>
+                <p className="mt-1 text-sm text-foreground">
+                  Choose surah, range, reciter, and content options
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.35em] text-foreground-muted">
-                Session Setup
-              </p>
-              <h2 className="mt-1 text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                Configure your memorization pass
-              </h2>
-              <p className="mt-1 text-sm text-foreground-muted">
-                Choose surah, range, reciter, and content options
-              </p>
-            </div>
+            <span
+              className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium tabular-nums ${
+                isLoadingVerses
+                  ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                  : "bg-brand/15 text-brand"
+              }`}
+            >
+              {isLoadingVerses ? "Refreshing…" : "Ready"}
+            </span>
           </div>
-          <span
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium tabular-nums ${
-              isLoadingVerses
-                ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                : "bg-brand/15 text-brand"
-            }`}
-          >
-            {isLoadingVerses ? "Refreshing…" : "Ready"}
-          </span>
         </div>
-      </div>
+      )}
 
       <div className="p-6">
         {/* Surah & range */}
@@ -191,42 +186,56 @@ export const CoachConfigurator = ({
         </div>
 
         {/* Content */}
-        <div>
-          <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
-            Content
-          </h3>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <SearchableSelect
-              id="session-translation"
-              label="Translation"
-              placeholder="None"
-              options={translationOptions.map((o) => ({
-                value: o.id,
-                label: o.label,
-              }))}
-              value={value.translationId}
-              onChange={(translationId) =>
+        {showContent && (
+          <div>
+            <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
+              Content
+            </h3>
+            <button
+              type="button"
+              onClick={() =>
                 onChange({
                   ...value,
-                  translationId: translationId ?? undefined,
+                  translationId:
+                    value.translationId === SAHIH_INTERNATIONAL_ID
+                      ? undefined
+                      : SAHIH_INTERNATIONAL_ID,
                 })
               }
-            />
-            <SearchableSelect
-              id="session-tafsir"
-              label="Tafsir (reflection sparks)"
-              placeholder="None"
-              options={tafsirOptions.map((o) => ({
-                value: o.id,
-                label: o.label,
-              }))}
-              value={value.tafsirId}
-              onChange={(tafsirId) =>
-                onChange({ ...value, tafsirId: tafsirId ?? undefined })
-              }
-            />
+              className={`inline-flex items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-sm font-medium transition-colors ${
+                value.translationId === SAHIH_INTERNATIONAL_ID
+                  ? "border-brand/60 bg-brand/15 text-foreground"
+                  : "border-white/10 bg-surface-muted/60 text-foreground-muted hover:border-brand/40 hover:bg-brand/10 hover:text-foreground"
+              }`}
+              aria-pressed={value.translationId === SAHIH_INTERNATIONAL_ID}
+            >
+              <div className="flex flex-col text-left">
+                <span className="text-xs uppercase tracking-[0.3em] text-foreground-muted">
+                  Translation
+                </span>
+                <span className="text-sm">
+                  Sahih International (EN)
+                </span>
+              </div>
+              <span
+                className={`relative inline-flex h-6 w-11 items-center rounded-full px-0.5 transition-colors ${
+                  value.translationId === SAHIH_INTERNATIONAL_ID
+                    ? "bg-brand"
+                    : "bg-white/15"
+                }`}
+                aria-hidden
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-background shadow-sm transition-transform ${
+                    value.translationId === SAHIH_INTERNATIONAL_ID
+                      ? "translate-x-5"
+                      : "translate-x-0"
+                  }`}
+                />
+              </span>
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

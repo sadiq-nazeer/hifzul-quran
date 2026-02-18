@@ -1,81 +1,94 @@
-import Link from "next/link";
+import { BookOpen, Headphones, GraduationCap, Sparkles } from "lucide-react";
+import { FeatureCard } from "@/components/ui/FeatureCard";
+import { Hero } from "@/components/ui/Hero";
+import { Section } from "@/components/ui/Section";
 
-const pillars = [
+const features = [
   {
-    title: "Interactive Coach",
+    title: "Hifz - Quran Memorization",
     description:
-      "Adaptive listen → whisper → recite loops with audio tooling and feedback.",
-    cta: "Enter Coach",
-    href: "/coach",
+      "Adaptive listen → whisper → recite loops with audio tooling and feedback for effective memorization.",
+    href: "/hifz",
+    icon: <GraduationCap className="h-6 w-6" />,
+    cta: "Start Hifz",
   },
   {
-    title: "Deep Study (Next)",
+    title: "Quran Recite",
+    description:
+      "Read and recite the full surah with beautiful Arabic text. Customize text size and color for optimal reading experience.",
+    href: "/recite",
+    icon: <BookOpen className="h-6 w-6" />,
+    cta: "Start Reciting",
+  },
+  {
+    title: "Quran Listening",
+    description:
+      "Listen to beautiful recitations from renowned reciters. Play full surahs or specific verses with advanced audio controls.",
+    href: "/listening",
+    icon: <Headphones className="h-6 w-6" />,
+    cta: "Start Listening",
+  },
+];
+
+const upcomingFeatures = [
+  {
+    title: "Deep Study",
     description:
       "Trace tafsir, translations, and linguistic layers after each successful recitation.",
-    cta: "Preview Brief",
     href: "/vision",
+    cta: "Preview Brief",
   },
   {
-    title: "Narrative Journey (Later)",
+    title: "Narrative Journey",
     description:
       "Progress through thematic arcs like Hijrah or Mercy, visualized as immersive journeys.",
-    cta: "See Roadmap",
     href: "/vision#narrative",
+    cta: "See Roadmap",
   },
 ];
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-12 px-6 py-16 lg:px-12">
-      <header className="rounded-3xl border border-white/10 bg-surface-raised/80 px-8 py-10 header-glow backdrop-blur">
-        <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
-          HifzDeen
-          </h1>
-        <p className="mt-4 max-w-2xl text-lg text-foreground-muted">
-          Sustainable engineering, immersive UX, and rigorous documentation.
-          Iteration 1 delivers the Interactive Memorization & Recitation Coach
-          while preparing study and narrative extensions.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Link
-            href="/coach"
-            className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-black transition hover:scale-[1.02]"
-          >
-            Launch Coach
-          </Link>
-          <Link
-            href="/docs/product/vision"
-            className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-foreground transition hover:border-brand hover:text-brand"
-          >
-            Read Vision Brief
-          </Link>
-        </div>
-      </header>
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-16 px-6 py-16 lg:px-12">
+      <Hero
+        title="HifzDeen"
+        description="An immersive platform for Quran memorization, recitation, and listening. Experience the Holy Quran with beautiful recitations, translations, and interactive learning tools."
+        primaryAction={{
+          label: "Start Reciting",
+          href: "/recite",
+        }}
+        secondaryAction={{
+          label: "Start Listening",
+          href: "/listening",
+        }}
+      />
 
-      <section className="grid gap-6 md:grid-cols-3">
-        {pillars.map((pillar) => (
-          <article
-            key={pillar.title}
-            className="flex flex-col justify-between rounded-2xl border border-white/10 bg-surface-muted/70 p-6"
-          >
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">
-                {pillar.title}
-              </h3>
-              <p className="mt-3 text-sm text-foreground-muted">
-                {pillar.description}
-              </p>
-            </div>
-            <Link
-              href={pillar.href}
-              className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-accent"
-            >
-              {pillar.cta}
-              <span aria-hidden="true">↗</span>
-            </Link>
-          </article>
-        ))}
-      </section>
-      </main>
+      <Section
+        title="Explore Features"
+        subtitle="Choose how you want to engage with the Quran"
+      >
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature) => (
+            <FeatureCard key={feature.title} {...feature} />
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        title="Coming Soon"
+        subtitle="Exciting features in development"
+        className="border-t border-foreground/10 pt-12"
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          {upcomingFeatures.map((feature) => (
+            <FeatureCard
+              key={feature.title}
+              {...feature}
+              icon={<Sparkles className="h-6 w-6" />}
+            />
+          ))}
+        </div>
+      </Section>
+    </main>
   );
 }

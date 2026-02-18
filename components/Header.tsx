@@ -12,7 +12,7 @@ export async function Header() {
 
   return (
     <header
-      className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-md"
+      className="sticky top-0 z-50 w-full border-b border-foreground/10 bg-background/80 backdrop-blur-md"
       role="banner"
     >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6">
@@ -23,6 +23,26 @@ export async function Header() {
           >
             HifzDeen
           </Link>
+          <nav className="hidden items-center gap-4 sm:flex">
+            <Link
+              href="/recite"
+              className="text-sm text-foreground/80 underline-offset-4 transition hover:text-brand hover:underline"
+            >
+              Recite Quran 
+            </Link>
+            <Link
+              href="/listening"
+              className="text-sm text-foreground/80 underline-offset-4 transition hover:text-brand hover:underline"
+            >
+              Listen Quran
+            </Link>
+            <Link
+              href="/hifz"
+              className="text-sm text-foreground/80 underline-offset-4 transition hover:text-brand hover:underline"
+            >
+              Memorize Quran
+            </Link>
+          </nav>
         </div>
         <div className="flex shrink-0 items-center gap-3">
           {session ? (

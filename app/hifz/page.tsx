@@ -1,12 +1,13 @@
 "use client";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CoachConfigurator } from "@/components/coach/CoachConfigurator";
 import { CoachSessionTimeline } from "@/components/coach/CoachSessionTimeline";
 import { SessionHistory } from "@/components/coach/SessionHistory";
 import { SurahAudioPanel } from "@/components/coach/SurahAudioPanel";
 import { VerseCard } from "@/components/coach/VerseCard";
+import { Section } from "@/components/ui/Section";
 import { useChapters } from "@/lib/hooks/useChapters";
 import { useCoachBundle, type CoachBundleParams } from "@/lib/hooks/useCoachBundle";
 import { useReciters } from "@/lib/hooks/useReciters";
@@ -18,7 +19,7 @@ type VerseProgress = {
   notes?: string;
 };
 
-export default function CoachPage() {
+export default function HifzPage() {
   const { chapters } = useChapters();
   const { reciters } = useReciters();
 
@@ -26,8 +27,7 @@ export default function CoachPage() {
     chapterId: undefined,
     fromVerse: 1,
     toVerse: 5,
-    translationId: 20,
-    tafsirId: 169,
+    translationId: undefined,
   });
   const [progress, setProgress] = useState<Record<string, VerseProgress>>({});
   const [historyTrigger, setHistoryTrigger] = useState("");
@@ -139,7 +139,7 @@ export default function CoachPage() {
     {
       id: "reflect",
       label: "Reflect",
-      description: "Absorb translation/tafsir sparks after mastery.",
+      description: "Absorb translation after mastery.",
       status: allRecited ? "complete" : "pending",
     },
   ] as const;
@@ -197,6 +197,18 @@ export default function CoachPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-6 py-12 lg:px-20 xl:px-24">
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/15 text-brand">
+          <GraduationCap className="h-6 w-6" />
+        </div>
+        <Section
+          title="Hifz - Quran Memorization"
+          subtitle="Listen → whisper → recite drills with audio loops, feedback, and reflection."
+        >
+          <div />
+        </Section>
+      </div>
+
       <div className="min-w-0 flex-1 space-y-6">
         <CoachConfigurator
           chapters={chapters}
@@ -238,7 +250,7 @@ export default function CoachPage() {
           <div className="space-y-6">
             {isIdle && !params.chapterId && (
               <p className="rounded-3xl border border-dashed border-white/10 p-6 text-sm text-foreground-muted">
-                Pick a surah to begin the coaching sequence.
+                Pick a surah to begin your hifz sequence.
               </p>
             )}
 
@@ -283,7 +295,10 @@ export default function CoachPage() {
                     id={sectionId}
                     className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 md:px-5 md:py-4"
                     onClick={() =>
-                      setExpandedAyahs((prev) => ({ ...prev, [verseKey]: !prev[verseKey] }))
+                      setExpandedAyahs((prev) => ({
+                        ...prev,
+                        [verseKey]: !prev[verseKey],
+                      }))
                     }
                     aria-expanded={isExpanded}
                   >
@@ -333,10 +348,7 @@ export default function CoachPage() {
           </ul>
         </section>
 
-        <SessionHistory
-          pendingEntry={pendingHistoryEntry}
-          triggerSaveKey={historyTrigger}
-        />
+        <SessionHistory pendingEntry={pendingHistoryEntry} triggerSaveKey={historyTrigger} />
       </div>
     </main>
   );

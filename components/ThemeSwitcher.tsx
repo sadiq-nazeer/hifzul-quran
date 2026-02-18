@@ -1,5 +1,6 @@
 "use client";
 
+import { SunMoon } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useTheme } from "@/components/ThemeProvider";
 import { ACCENT_OPTIONS } from "@/lib/theme";
@@ -49,37 +50,24 @@ export function ThemeSwitcher() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        aria-haspopup="true"
+        aria-haspopup="dialog"
         aria-label="Open theme options"
-        className="flex items-center gap-2 rounded-full border border-white/10 bg-surface-muted/80 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-surface-highlight/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 bg-surface-muted/80 text-foreground shadow-sm transition hover:bg-surface-highlight/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        <span
-          className="h-5 w-5 rounded-full border border-white/20"
-          style={{ backgroundColor: ACCENT_SWATCHES[accent] }}
-          aria-hidden
-        />
-        <span className="hidden sm:inline">{mode === "dark" ? "Dark" : "Light"}</span>
-        <svg
-          className={`h-4 w-4 text-foreground-muted transition ${open ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <SunMoon className="h-5 w-5" aria-hidden />
+        <span className="sr-only">Theme</span>
       </button>
 
       {open && (
         <div
           ref={panelRef}
-          className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-surface-raised py-3 shadow-xl backdrop-blur"
+          className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-foreground/10 bg-surface-raised py-3 shadow-xl backdrop-blur"
           role="dialog"
           aria-label="Theme options"
         >
           <div className="px-3 pb-3">
             <div
-              className="inline-flex w-full rounded-full border border-white/10 bg-surface-muted/80 p-0.5"
+              className="inline-flex w-full rounded-full border border-foreground/10 bg-surface-muted/80 p-0.5"
               role="tablist"
               aria-label="Theme mode"
             >
@@ -93,7 +81,7 @@ export function ThemeSwitcher() {
                   className={`flex-1 rounded-full py-2 text-sm font-medium transition-all duration-200 ${
                     mode === opt.id
                       ? "bg-brand text-black shadow-sm"
-                      : "text-foreground-muted hover:bg-white/10 hover:text-foreground"
+                      : "text-foreground-muted hover:bg-foreground/5 hover:text-foreground"
                   }`}
                 >
                   {opt.label}
@@ -101,7 +89,7 @@ export function ThemeSwitcher() {
               ))}
             </div>
           </div>
-          <div className="border-t border-white/5 px-3 pt-3">
+          <div className="border-t border-foreground/10 px-3 pt-3">
             <div className="flex flex-wrap gap-2" role="group" aria-label="Accent color">
               {ACCENT_OPTIONS.map((opt) => (
                 <button
@@ -113,7 +101,7 @@ export function ThemeSwitcher() {
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-200 hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised ${
                     accent === opt.id
                       ? "border-foreground shadow-md ring-2 ring-brand/50 ring-offset-2 ring-offset-surface-raised"
-                      : "border-white/15 hover:border-white/30"
+                      : "border-foreground/15 hover:border-foreground/30"
                   }`}
                   style={{ backgroundColor: ACCENT_SWATCHES[opt.id] }}
                 >
