@@ -4,6 +4,12 @@ import { Minus, Plus } from "lucide-react";
 import { Fragment, startTransition, useEffect, useMemo, useRef, useState } from "react";
 import type { CoachSessionVerse } from "@/lib/types/quran";
 
+/** Split Uthmani Arabic verse into words (space-separated). */
+function splitVerseIntoWords(text: string): string[] {
+  if (!text || typeof text !== "string") return [];
+  return text.trim().split(/\s+/).filter(Boolean);
+}
+
 const ARABIC_NUMERALS = "٠١٢٣٤٥٦٧٨٩";
 
 const toArabicNumerals = (n: number): string =>
@@ -69,8 +75,35 @@ export function FullSurahText({
   const [textColor, setTextColor] = useState<TextColor>(defaultTextColor);
   const [currentPage, setCurrentPage] = useState(0);
   const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
+  const [playingWordKey, setPlayingWordKey] = useState<string | null>(null);
   const colorDropdownRef = useRef<HTMLDivElement>(null);
   const prevInitialPageRef = useRef<number>(-1);
+  const wordAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const playWordAudio = (wordAudioUrl?: string, wordKey?: string) => {
+    if (!wordAudioUrl || !wordKey) return;
+    const previousWordAudio = wordAudioRef.current;
+    if (previousWordAudio) {
+      previousWordAudio.pause();
+      previousWordAudio.currentTime = 0;
+    }
+    const player = new Audio(wordAudioUrl);
+    wordAudioRef.current = player;
+    setPlayingWordKey(wordKey);
+    player.onended = () => setPlayingWordKey(null);
+    player.onerror = () => setPlayingWordKey(null);
+    player.play().catch(() => setPlayingWordKey(null));
+  };
+
+  useEffect(() => {
+    return () => {
+      const wordAudio = wordAudioRef.current;
+      if (wordAudio) {
+        wordAudio.pause();
+      }
+      wordAudioRef.current = null;
+    };
+  }, []);
 
   // Sort verses by orderInChapter to ensure correct display order
   const sortedVerses = useMemo(
@@ -242,12 +275,45 @@ export function FullSurahText({
         >
           {pageVerses.map((verse) => {
             const isHighlighted = verse.verse.verseKey === highlightedVerseKey;
+            const apiWords =
+              verse.verse.words?.filter(
+                (word) =>
+                  word.charTypeName !== "end" &&
+                  word.textUthmani.trim().length > 0,
+              ) ?? [];
+            const verseWords =
+              apiWords.length > 0
+                ? apiWords.map((w) => w.textUthmani)
+                : splitVerseIntoWords(verse.verse.textUthmani);
+            const baseClassName = `${selectedColorOption.className} ${isHighlighted ? "underline decoration-2" : ""}`;
             return (
               <Fragment key={verse.verse.verseKey}>
-                <span
-                  className={`${selectedColorOption.className} ${isHighlighted ? "underline decoration-2" : ""}`}
-                >
-                  {verse.verse.textUthmani}
+                <span className={baseClassName}>
+                  {verseWords.length > 0
+                    ? verseWords.map((word, i) => (
+                        <span key={i}>
+                          {apiWords[i]?.audioUrl ? (
+                            <button
+                              type="button"
+                              className={`m-0 inline border-0 bg-transparent p-0 font-inherit leading-inherit transition-colors hover:opacity-80 ${playingWordKey === `${verse.verse.verseKey}-${apiWords[i].id}` ? "opacity-100 text-brand" : ""}`}
+                              onClick={() =>
+                                playWordAudio(
+                                  apiWords[i].audioUrl,
+                                  `${verse.verse.verseKey}-${apiWords[i].id}`,
+                                )
+                              }
+                              title="Play word audio"
+                              aria-label={`Play word audio: ${word}`}
+                            >
+                              {word}
+                            </button>
+                          ) : (
+                            <span>{word}</span>
+                          )}
+                          {i < verseWords.length - 1 ? "\u00A0" : null}
+                        </span>
+                      ))
+                    : verse.verse.textUthmani}
                 </span>
                 <span
                   className="verse-number-marker verse-number-marker--circle"

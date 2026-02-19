@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
+import { BookOpen, ChevronDown, Volume2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { FullSurahText } from "@/components/quran/FullSurahText";
 import { SearchableSelect } from "@/components/SearchableSelect";
@@ -42,6 +42,8 @@ export default function RecitePage() {
   const { verses, isLoading, isError, error } = useCoachBundle(
     fetchParams ?? { chapterId: undefined },
   );
+
+  const [guideOpen, setGuideOpen] = useState(false);
 
   const chapterOptions = useMemo(
     () =>
@@ -112,9 +114,76 @@ export default function RecitePage() {
         )}
 
         {!isLoading && !isError && verses.length > 0 && (
-          <Card variant="raised" className="p-6">
-            <FullSurahText verses={verses} />
-          </Card>
+          <>
+            <div className="overflow-hidden rounded-2xl border border-foreground/10 border-l-4 border-l-brand bg-surface-muted/50 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setGuideOpen((open) => !open)}
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:ring-inset"
+                aria-expanded={guideOpen}
+                aria-controls="recite-guide-content"
+                id="recite-guide-toggle"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
+                  <Volume2 className="h-4 w-4" aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="text-sm font-semibold text-foreground">
+                    How to use this page? ✨
+                  </span>
+                </span>
+                <ChevronDown
+                  className={`h-5 w-5 shrink-0 text-foreground-muted transition-transform duration-200 ${guideOpen ? "rotate-180" : ""}`}
+                  aria-hidden
+                />
+              </button>
+              <div
+                id="recite-guide-content"
+                role="region"
+                aria-labelledby="recite-guide-toggle"
+                className="grid transition-[grid-template-rows] duration-200 ease-out"
+                style={{ gridTemplateRows: guideOpen ? "1fr" : "0fr" }}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  <div className="border-t border-foreground/10 px-4 pb-4 pt-3">
+                    <ul className="list-none space-y-2.5 text-sm text-foreground-muted">
+                      <li className="flex gap-2">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                        <span>
+                          <strong className="text-foreground">Click any word</strong> — hear its
+                          pronunciation. Tap a word in the text to play its audio.
+                        </span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                        <span>
+                          <strong className="text-foreground">Text size</strong> — use the + and −
+                          buttons above the surah to make the text larger or smaller.
+                        </span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                        <span>
+                          <strong className="text-foreground">Text color</strong> — pick a color
+                          from the option above to change how the Arabic text looks.
+                        </span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                        <span>
+                          <strong className="text-foreground">Pages</strong> — use Previous and Next
+                          to move through the surah in sections.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Card variant="raised" className="p-6">
+              <FullSurahText verses={verses} />
+            </Card>
+          </>
         )}
 
         {!isLoading && !isError && !effectiveChapterId && (
