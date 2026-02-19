@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Minus, Plus } from "lucide-react";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FullSurahText } from "@/components/quran/FullSurahText";
 import {
   useChapterAudioPlaylist,
   type ChapterAudioEntry,
@@ -9,39 +10,9 @@ import {
 import type { CoachSessionVerse } from "@/lib/types/quran";
 import { AudioPlayer } from "./AudioPlayer";
 
+const WORDS_PER_PAGE = 50;
+
 type PlaybackScope = "session" | "surah";
-
-type CurrentAyahHighlight =
-  | "brand"
-  | "accent"
-  | "teal"
-  | "amber"
-  | "rose"
-  | "none";
-
-const AYAH_HIGHLIGHT_OPTIONS: Array<{
-  id: CurrentAyahHighlight;
-  label: string;
-  className: string;
-  swatchClass: string;
-}> = [
-  { id: "brand", label: "Theme", className: "text-brand", swatchClass: "bg-brand" },
-  { id: "accent", label: "Accent", className: "text-brand-accent", swatchClass: "bg-brand-accent" },
-  { id: "teal", label: "Teal", className: "text-teal-400", swatchClass: "bg-teal-400" },
-  { id: "amber", label: "Amber", className: "text-amber-400", swatchClass: "bg-amber-400" },
-  { id: "rose", label: "Rose", className: "text-rose-400", swatchClass: "bg-rose-400" },
-  { id: "none", label: "None", className: "text-foreground", swatchClass: "bg-foreground/70" },
-];
-
-/** Full surah paragraph text size: index → Tailwind text/leading classes. */
-const FULL_SURAH_TEXT_SIZES = [
-  "text-base leading-relaxed md:text-lg md:leading-loose lg:text-xl",
-  "text-xl leading-relaxed md:text-2xl md:leading-loose lg:text-3xl",
-  "text-2xl leading-relaxed md:text-3xl md:leading-loose lg:text-4xl",
-  "text-3xl leading-relaxed md:text-4xl md:leading-loose lg:text-5xl",
-] as const;
-const FULL_SURAH_TEXT_SIZE_MIN = 0;
-const FULL_SURAH_TEXT_SIZE_MAX = FULL_SURAH_TEXT_SIZES.length - 1;
 
 type Props = {
   sessionVerses: CoachSessionVerse[];
@@ -57,14 +28,6 @@ type Props = {
   versesCount?: number;
   onRangeChange?: (fromVerse: number, toVerse: number) => void;
 };
-
-const ARABIC_NUMERALS = "٠١٢٣٤٥٦٧٨٩";
-
-const toArabicNumerals = (n: number): string =>
-  String(n)
-    .split("")
-    .map((d) => ARABIC_NUMERALS[Number.parseInt(d, 10)] ?? d)
-    .join("");
 
 const clampVerse = (value: number | undefined, min: number, max: number): number => {
   const n = value ?? min;
@@ -90,16 +53,9 @@ export const SurahAudioPanel = ({
   versesCount = 286,
   onRangeChange,
 }: Props) => {
-  const AYAT_PER_PAGE = 10;
-
   const [scope, setScope] = useState<PlaybackScope>("surah");
   const [fullSurahTextView, setFullSurahTextView] = useState(false);
-  const [fullSurahTextSizeIndex, setFullSurahTextSizeIndex] = useState(1); // 1 = default (medium)
-  const [currentAyahHighlight, setCurrentAyahHighlight] =
-    useState<CurrentAyahHighlight>("brand");
-  const [highlightDropdownOpen, setHighlightDropdownOpen] = useState(false);
-  const highlightDropdownRef = useRef<HTMLDivElement>(null);
-  const [surahPage, setSurahPage] = useState(0);
+  const [fullSurahTextSizeIndex] = useState(1); // 1 = default (medium); FullSurahText has its own size controls
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loopSelection] = useState(false);
   const [surahElapsedSeconds, setSurahElapsedSeconds] = useState(0);
@@ -178,6 +134,24 @@ export const SurahAudioPanel = ({
   });
 
   const activePlaylist = isSurahScope ? surahPlaylist : sessionPlaylist;
+
+  /** Verses for Full Surah view: from playlist with word data when available (no full-text Quran). */
+  const fullSurahVerses = useMemo((): CoachSessionVerse[] => {
+    return activePlaylist.map((entry) => {
+      const existing = verseByKeyForWords.get(entry.verseKey);
+      if (existing) return existing;
+      return {
+        chapterId: chapterId ?? 0,
+        orderInChapter: entry.orderInChapter,
+        verse: {
+          id: 0,
+          verseKey: entry.verseKey,
+          textUthmani: entry.text,
+        },
+      };
+    });
+  }, [activePlaylist, verseByKeyForWords, chapterId]);
+
   const playlistSignature = useMemo(
     () => activePlaylist.map((entry) => entry.verseKey).join("|"),
     [activePlaylist],
@@ -245,46 +219,10 @@ export const SurahAudioPanel = ({
     setSurahElapsedSeconds(0);
     if (scope === "session") {
       setFullSurahTextView(false);
-      setSurahPage(0);
     } else if (scope === "surah") {
       setFullSurahTextView(false);
     }
   }, [playlistSignature, scope]);
-
-  const surahTotalPages = Math.max(
-    1,
-    Math.ceil(activePlaylist.length / AYAT_PER_PAGE),
-  );
-  const safeSurahPage = Math.min(surahPage, Math.max(0, surahTotalPages - 1));
-  const surahPageAyat = useMemo(
-    () =>
-      activePlaylist.slice(
-        safeSurahPage * AYAT_PER_PAGE,
-        (safeSurahPage + 1) * AYAT_PER_PAGE,
-      ),
-    [activePlaylist, safeSurahPage],
-  );
-
-  useEffect(() => {
-    if (surahPage >= surahTotalPages && surahTotalPages > 0) {
-      setSurahPage(Math.max(0, surahTotalPages - 1));
-    }
-  }, [surahPage, surahTotalPages]);
-
-  const currentTrackVerseKey = highlightedTrack?.verseKey;
-
-  useEffect(() => {
-    if (!isSurahScope || !fullSurahTextView || !currentTrackVerseKey || activePlaylist.length === 0) {
-      return;
-    }
-    const idx = activePlaylist.findIndex((e) => e.verseKey === currentTrackVerseKey);
-    if (idx >= 0) {
-      const pageForAyah = Math.floor(idx / AYAT_PER_PAGE);
-      setSurahPage((prev) => (pageForAyah !== prev ? pageForAyah : prev));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- fixed-length primitive deps to avoid "dependency array changed size" error
-  }, [isSurahScope, fullSurahTextView, currentTrackVerseKey, playlistSignature]);
-
 
   useEffect(() => {
     if (
@@ -297,22 +235,6 @@ export const SurahAudioPanel = ({
     setCurrentIndex(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activePlaylist.length]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        highlightDropdownRef.current &&
-        !highlightDropdownRef.current.contains(event.target as Node)
-      ) {
-        setHighlightDropdownOpen(false);
-      }
-    };
-    if (highlightDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [highlightDropdownOpen]);
-
 
   const nextLabel =
     activePlaylist.length > 0
@@ -539,191 +461,17 @@ export const SurahAudioPanel = ({
           <div className="space-y-4 p-3 pt-0 md:p-4">
             {isSurahScope && fullSurahTextView && activePlaylist.length > 0 ? (
               <div className="full-surah-ayat-list -mx-3 w-[calc(100%+1.5rem)] max-w-none space-y-1 md:-mx-4 md:w-[calc(100%+2rem)]">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-foreground-muted">
-                    Full Surah • {activePlaylist.length} ayats
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs text-foreground-muted">
-                      Text size:
-                    </span>
-                    <div className="flex items-center rounded-lg border border-foreground/10 bg-foreground/5">
-                      <button
-                        type="button"
-                        disabled={fullSurahTextSizeIndex <= FULL_SURAH_TEXT_SIZE_MIN}
-                        className="rounded-l-lg p-1.5 text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-transparent"
-                        onClick={() =>
-                          setFullSurahTextSizeIndex((i) =>
-                            Math.max(FULL_SURAH_TEXT_SIZE_MIN, i - 1)
-                          )
-                        }
-                        aria-label="Decrease text size"
-                      >
-                        <Minus className="h-4 w-4" strokeWidth={2} />
-                      </button>
-                      <button
-                        type="button"
-                        disabled={fullSurahTextSizeIndex >= FULL_SURAH_TEXT_SIZE_MAX}
-                        className="rounded-r-lg border-l border-foreground/10 p-1.5 text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-transparent"
-                        onClick={() =>
-                          setFullSurahTextSizeIndex((i) =>
-                            Math.min(FULL_SURAH_TEXT_SIZE_MAX, i + 1)
-                          )
-                        }
-                        aria-label="Increase text size"
-                      >
-                        <Plus className="h-4 w-4" strokeWidth={2} />
-                      </button>
-                    </div>
-                    <span className="text-xs text-foreground-muted">
-                      Highlight:
-                    </span>
-                    <div
-                      className="relative"
-                      ref={highlightDropdownRef}
-                    >
-                      <span className="sr-only">Highlight color</span>
-                      <button
-                        type="button"
-                        className="flex items-center gap-2 rounded-lg border border-foreground/10 bg-foreground/5 px-2.5 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground/10"
-                        onClick={() => setHighlightDropdownOpen((open) => !open)}
-                        aria-expanded={highlightDropdownOpen}
-                        aria-haspopup="listbox"
-                        aria-label={`Highlight: ${AYAH_HIGHLIGHT_OPTIONS.find((o) => o.id === currentAyahHighlight)?.label ?? "Theme"}`}
-                      >
-                        <span
-                          className={`h-3.5 w-3.5 shrink-0 rounded-sm border border-foreground/20 ${AYAH_HIGHLIGHT_OPTIONS.find((o) => o.id === currentAyahHighlight)?.swatchClass ?? "bg-brand"}`}
-                          aria-hidden
-                        />
-                        <span className="text-foreground-muted">
-                          {AYAH_HIGHLIGHT_OPTIONS.find((o) => o.id === currentAyahHighlight)?.label ?? "Theme"}
-                        </span>
-                      </button>
-                      {highlightDropdownOpen && (
-                        <ul
-                          className="absolute right-0 top-full z-10 mt-1 min-w-[8rem] rounded-lg border border-foreground/10 bg-surface-raised py-1 shadow-lg"
-                          role="listbox"
-                          aria-label="Highlight color options"
-                        >
-                          {AYAH_HIGHLIGHT_OPTIONS.map((opt) => (
-                            <li key={opt.id} role="option" aria-selected={currentAyahHighlight === opt.id}>
-                              <button
-                                type="button"
-                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-medium text-foreground transition hover:bg-foreground/10"
-                                onClick={() => {
-                                  setCurrentAyahHighlight(opt.id);
-                                  setHighlightDropdownOpen(false);
-                                }}
-                              >
-                                <span
-                                  className={`h-4 w-4 shrink-0 rounded border border-foreground/20 ${opt.swatchClass}`}
-                                  aria-hidden
-                                />
-                                {opt.label}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-xl border border-foreground/10 bg-surface-muted/30 p-3 md:p-4">
-                  <div
-                    className={`surah-paragraph text-center text-foreground ${FULL_SURAH_TEXT_SIZES[fullSurahTextSizeIndex]}`}
-                    dir="rtl"
-                  >
-                    {surahPageAyat.map((entry) => {
-                      const isCurrentAyah = highlightedTrack?.verseKey === entry.verseKey;
-                      const highlightClass =
-                        isCurrentAyah
-                          ? AYAH_HIGHLIGHT_OPTIONS.find(
-                              (o) => o.id === currentAyahHighlight,
-                            )?.className
-                          : undefined;
-                      const verseForWords = verseByKeyForWords.get(entry.verseKey);
-                      const apiWords =
-                        verseForWords?.verse.words?.filter(
-                          (word) =>
-                            word.charTypeName !== "end" &&
-                            word.textUthmani.trim().length > 0,
-                        ) ?? [];
-                      const verseWords =
-                        apiWords.length > 0
-                          ? apiWords.map((w) => w.textUthmani)
-                          : splitVerseIntoWords(entry.text);
-                      const hasWordAudio =
-                        apiWords.length > 0 &&
-                        apiWords.some((w) => w.audioUrl);
-                      return (
-                        <Fragment key={entry.verseKey}>
-                          <span className={highlightClass}>
-                            {hasWordAudio
-                              ? verseWords.map((word, i) => (
-                                  <span key={i}>
-                                    {apiWords[i]?.audioUrl ? (
-                                      <button
-                                        type="button"
-                                        className={`m-0 inline border-0 bg-transparent p-0 font-inherit leading-inherit transition-colors hover:opacity-80 ${playingWordKey === `${entry.verseKey}-${apiWords[i].id}` ? "opacity-100 text-brand" : ""}`}
-                                        onClick={() =>
-                                          playWordAudio(
-                                            apiWords[i].audioUrl,
-                                            `${entry.verseKey}-${apiWords[i].id}`,
-                                          )
-                                        }
-                                        title="Play word audio"
-                                        aria-label={`Play word audio: ${word}`}
-                                      >
-                                        {word}
-                                      </button>
-                                    ) : (
-                                      <span>{word}</span>
-                                    )}
-                                    {i < verseWords.length - 1 ? "\u00A0" : null}
-                                  </span>
-                                ))
-                              : entry.text}
-                          </span>
-                          <span
-                            className="verse-number-marker verse-number-marker--circle"
-                            aria-label={`Ayah ${entry.orderInChapter}`}
-                          >
-                            {toArabicNumerals(entry.orderInChapter)}
-                          </span>
-                          {" "}
-                        </Fragment>
-                      );
-                    })}
-                  </div>
-                </div>
+                <FullSurahText
+                  verses={fullSurahVerses}
+                  wordsPerPage={WORDS_PER_PAGE}
+                  highlightedVerseKey={highlightedTrack?.verseKey}
+                  defaultTextSize={fullSurahTextSizeIndex}
+                />
                 {highlightedTrack && (
                   <p className="text-xs text-foreground-muted">
                     Now playing: {nextLabel}
                   </p>
                 )}
-                <div className="flex items-center justify-center gap-1.5">
-                  <button
-                    type="button"
-                    disabled={safeSurahPage <= 0}
-                    className="rounded-lg border border-foreground/10 bg-foreground/5 px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-foreground/5"
-                    onClick={() => setSurahPage((p) => Math.max(0, p - 1))}
-                  >
-                    Previous
-                  </button>
-                  <span className="text-xs tabular-nums text-foreground-muted">
-                    Page {safeSurahPage + 1} of {surahTotalPages}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={safeSurahPage >= surahTotalPages - 1}
-                    className="rounded-lg border border-foreground/10 bg-foreground/5 px-2.5 py-1 text-xs font-medium text-foreground transition hover:bg-foreground/10 disabled:opacity-40 disabled:hover:bg-foreground/5"
-                    onClick={() =>
-                      setSurahPage((p) => Math.min(surahTotalPages - 1, p + 1))
-                    }
-                  >
-                    Next
-                  </button>
-                </div>
               </div>
             ) : (
               <div>

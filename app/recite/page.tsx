@@ -181,7 +181,7 @@ export default function RecitePage() {
               </div>
             </div>
             <Card variant="raised" className="px-1.5 py-2 sm:px-3 sm:py-4 md:px-6 md:py-6">
-              <FullSurahText verses={verses} />
+              <FullSurahText verses={verses} wordsPerPage={50} />
             </Card>
           </>
         )}
