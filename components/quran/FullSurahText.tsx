@@ -268,7 +268,7 @@ export function FullSurahText({
       </div>
 
       {/* Text display */}
-      <div className="rounded-xl border border-white/10 bg-surface-muted/30 p-3 md:p-4">
+      <div className="rounded-xl border border-white/10 bg-surface-muted/30 p-2 sm:p-3 md:p-4">
         <div
           className={`surah-paragraph text-center ${FULL_SURAH_TEXT_SIZES[textSizeIndex]}`}
           dir="rtl"
