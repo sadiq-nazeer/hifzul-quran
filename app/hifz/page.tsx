@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronUp, GraduationCap } from "lucide-react";
+import { ChevronDown, ChevronUp, GraduationCap, Volume2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CoachConfigurator } from "@/components/coach/CoachConfigurator";
 import { CoachSessionTimeline } from "@/components/coach/CoachSessionTimeline";
@@ -54,6 +54,20 @@ export default function HifzPage() {
   const selectedChapter = useMemo(
     () => chapters.find((chapter) => chapter.id === params.chapterId),
     [chapters, params.chapterId],
+  );
+
+  const fullChapterFetchParams = useMemo(() => {
+    if (!params.chapterId || !selectedChapter) return null;
+    return {
+      chapterId: params.chapterId,
+      fromVerse: 1,
+      toVerse: selectedChapter.versesCount,
+      perPage: Math.max(selectedChapter.versesCount, 286),
+    };
+  }, [params.chapterId, selectedChapter]);
+
+  const { verses: fullChapterVerses } = useCoachBundle(
+    fullChapterFetchParams ?? { chapterId: undefined },
   );
 
   const selectedReciter = useMemo(
@@ -183,6 +197,8 @@ export default function HifzPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionComplete, averageScore]);
 
+  const [guideOpen, setGuideOpen] = useState(false);
+
   const pendingHistoryEntry = sessionComplete && params.chapterId
     ? {
         chapterId: params.chapterId,
@@ -218,8 +234,84 @@ export default function HifzPage() {
           isLoadingVerses={isLoading}
         />
         <CoachSessionTimeline phases={phases} />
+        {params.chapterId && (
+          <div className="overflow-hidden rounded-2xl border border-foreground/10 border-l-4 border-l-brand bg-surface-muted/50 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setGuideOpen((open) => !open)}
+              className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-brand/5 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:ring-inset"
+              aria-expanded={guideOpen}
+              aria-controls="hifz-guide-content"
+              id="hifz-guide-toggle"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">
+                <Volume2 className="h-4 w-4" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="text-sm font-semibold text-foreground">
+                  How to use this page? ✨
+                </span>
+              </span>
+              <ChevronDown
+                className={`h-5 w-5 shrink-0 text-foreground-muted transition-transform duration-200 ${guideOpen ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            <div
+              id="hifz-guide-content"
+              role="region"
+              aria-labelledby="hifz-guide-toggle"
+              className="grid transition-[grid-template-rows] duration-200 ease-out"
+              style={{ gridTemplateRows: guideOpen ? "1fr" : "0fr" }}
+            >
+              <div className="min-h-0 overflow-hidden">
+                <div className="border-t border-foreground/10 px-4 pb-4 pt-3">
+                  <ul className="list-none space-y-2.5 text-sm text-foreground-muted">
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                      <span>
+                        <strong className="text-foreground">Four phases</strong> — Listen to each
+                        ayah, then Whisper along, then Recite and self-grade, then Reflect with
+                        translation.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                      <span>
+                        <strong className="text-foreground">Playback panel</strong> — use Full Surah
+                        or Surah Range and the player to listen.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                      <span>
+                        <strong className="text-foreground">Ayah cards</strong> — expand an ayah below
+                        to see its text, translation, and word-by-word audio.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                      <span>
+                        <strong className="text-foreground">Click a word to hear it.</strong> In the
+                        playback text or any ayah card, tap a word to play its pronunciation.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                      <span>
+                        <strong className="text-foreground">Session pulse</strong> — after you recite
+                        all ayat, your average confidence and session history appear at the bottom.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <SurahAudioPanel
           sessionVerses={verses}
+          fullChapterVerses={fullChapterVerses}
           chapterId={params.chapterId}
           chapterName={selectedChapter?.nameSimple}
           reciterId={params.reciterId}

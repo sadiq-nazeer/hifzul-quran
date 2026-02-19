@@ -150,8 +150,8 @@ export default function RecitePage() {
                       <li className="flex gap-2">
                         <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
                         <span>
-                          <strong className="text-foreground">Click any word</strong> — hear its
-                          pronunciation. Tap a word in the text to play its audio.
+                          <strong className="text-foreground">Click a word to hear it.</strong> Tap any
+                          word in the Arabic text to play its pronunciation.
                         </span>
                       </li>
                       <li className="flex gap-2">

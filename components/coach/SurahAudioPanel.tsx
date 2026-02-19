@@ -45,6 +45,8 @@ const FULL_SURAH_TEXT_SIZE_MAX = FULL_SURAH_TEXT_SIZES.length - 1;
 
 type Props = {
   sessionVerses: CoachSessionVerse[];
+  /** Full chapter verses with word-level data (for word pronunciation in Full Surah view) */
+  fullChapterVerses?: CoachSessionVerse[];
   chapterId?: number;
   chapterName?: string;
   reciterId?: number;
@@ -70,8 +72,15 @@ const clampVerse = (value: number | undefined, min: number, max: number): number
   return Math.max(min, Math.min(max, Math.round(n)));
 };
 
+/** Split Uthmani Arabic verse into words (space-separated). */
+function splitVerseIntoWords(text: string): string[] {
+  if (!text || typeof text !== "string") return [];
+  return text.trim().split(/\s+/).filter(Boolean);
+}
+
 export const SurahAudioPanel = ({
   sessionVerses,
+  fullChapterVerses = [],
   chapterId,
   chapterName,
   reciterId,
@@ -95,6 +104,43 @@ export const SurahAudioPanel = ({
   const [loopSelection] = useState(false);
   const [surahElapsedSeconds, setSurahElapsedSeconds] = useState(0);
   const [sessionRangeExpanded, setSessionRangeExpanded] = useState(true);
+  const [playingWordKey, setPlayingWordKey] = useState<string | null>(null);
+  const wordAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const sessionVerseByKey = useMemo(
+    () => new Map(sessionVerses.map((v) => [v.verse.verseKey, v])),
+    [sessionVerses],
+  );
+
+  const fullChapterVerseByKey = useMemo(
+    () => new Map(fullChapterVerses.map((v) => [v.verse.verseKey, v])),
+    [fullChapterVerses],
+  );
+
+  const playWordAudio = (wordAudioUrl?: string, wordKey?: string) => {
+    if (!wordAudioUrl || !wordKey) return;
+    const previousWordAudio = wordAudioRef.current;
+    if (previousWordAudio) {
+      previousWordAudio.pause();
+      previousWordAudio.currentTime = 0;
+    }
+    const player = new Audio(wordAudioUrl);
+    wordAudioRef.current = player;
+    setPlayingWordKey(wordKey);
+    player.onended = () => setPlayingWordKey(null);
+    player.onerror = () => setPlayingWordKey(null);
+    player.play().catch(() => setPlayingWordKey(null));
+  };
+
+  useEffect(() => {
+    return () => {
+      const wordAudio = wordAudioRef.current;
+      if (wordAudio) {
+        wordAudio.pause();
+      }
+      wordAudioRef.current = null;
+    };
+  }, []);
 
   const sessionPlaylist = useMemo<ChapterAudioEntry[]>(
     () =>
@@ -111,6 +157,12 @@ export const SurahAudioPanel = ({
   );
 
   const isSurahScope = scope === "surah";
+
+  const verseByKeyForWords = useMemo(
+    () => (isSurahScope ? fullChapterVerseByKey : sessionVerseByKey),
+    [isSurahScope, fullChapterVerseByKey, sessionVerseByKey],
+  );
+
   const {
     playlist: surahPlaylist,
     fullSurahAudio,
@@ -589,12 +641,48 @@ export const SurahAudioPanel = ({
                               (o) => o.id === currentAyahHighlight,
                             )?.className
                           : undefined;
+                      const verseForWords = verseByKeyForWords.get(entry.verseKey);
+                      const apiWords =
+                        verseForWords?.verse.words?.filter(
+                          (word) =>
+                            word.charTypeName !== "end" &&
+                            word.textUthmani.trim().length > 0,
+                        ) ?? [];
+                      const verseWords =
+                        apiWords.length > 0
+                          ? apiWords.map((w) => w.textUthmani)
+                          : splitVerseIntoWords(entry.text);
+                      const hasWordAudio =
+                        apiWords.length > 0 &&
+                        apiWords.some((w) => w.audioUrl);
                       return (
                         <Fragment key={entry.verseKey}>
-                          <span
-                            className={highlightClass}
-                          >
-                            {entry.text}
+                          <span className={highlightClass}>
+                            {hasWordAudio
+                              ? verseWords.map((word, i) => (
+                                  <span key={i}>
+                                    {apiWords[i]?.audioUrl ? (
+                                      <button
+                                        type="button"
+                                        className={`m-0 inline border-0 bg-transparent p-0 font-inherit leading-inherit transition-colors hover:opacity-80 ${playingWordKey === `${entry.verseKey}-${apiWords[i].id}` ? "opacity-100 text-brand" : ""}`}
+                                        onClick={() =>
+                                          playWordAudio(
+                                            apiWords[i].audioUrl,
+                                            `${entry.verseKey}-${apiWords[i].id}`,
+                                          )
+                                        }
+                                        title="Play word audio"
+                                        aria-label={`Play word audio: ${word}`}
+                                      >
+                                        {word}
+                                      </button>
+                                    ) : (
+                                      <span>{word}</span>
+                                    )}
+                                    {i < verseWords.length - 1 ? "\u00A0" : null}
+                                  </span>
+                                ))
+                              : entry.text}
                           </span>
                           <span
                             className="verse-number-marker verse-number-marker--circle"
@@ -646,9 +734,58 @@ export const SurahAudioPanel = ({
                 )}
                 <div className="now-playing-card -mx-4 w-[calc(100%+2rem)] max-w-none rounded-xl border-l-4 border-brand bg-surface-highlight/50 p-3 text-foreground md:p-4">
                   {highlightedTrack ? (
-                    <p className="text-right text-3xl leading-snug text-foreground" dir="rtl">
-                      {highlightedTrack.text}
-                    </p>
+                    (() => {
+                      const nowVerse = highlightedTrack.verseKey
+                        ? verseByKeyForWords.get(highlightedTrack.verseKey)
+                        : undefined;
+                      const nowWords =
+                        nowVerse?.verse.words?.filter(
+                          (w) =>
+                            w.charTypeName !== "end" &&
+                            w.textUthmani.trim().length > 0,
+                        ) ?? [];
+                      const nowVerseWords =
+                        nowWords.length > 0
+                          ? nowWords.map((w) => w.textUthmani)
+                          : splitVerseIntoWords(highlightedTrack.text);
+                      const nowHasWordAudio =
+                        nowWords.length > 0 &&
+                        nowWords.some((w) => w.audioUrl);
+                      return (
+                        <p
+                          className="text-right text-3xl leading-snug text-foreground"
+                          dir="rtl"
+                        >
+                          {nowHasWordAudio
+                            ? nowVerseWords.map((word, i) => (
+                                <span key={i}>
+                                  {nowWords[i]?.audioUrl ? (
+                                    <button
+                                      type="button"
+                                      className={`m-0 inline border-0 bg-transparent p-0 font-inherit leading-inherit transition-colors hover:opacity-80 ${playingWordKey === `${highlightedTrack.verseKey}-${nowWords[i].id}` ? "opacity-100 text-brand" : ""}`}
+                                      onClick={() =>
+                                        playWordAudio(
+                                          nowWords[i].audioUrl,
+                                          `${highlightedTrack.verseKey}-${nowWords[i].id}`,
+                                        )
+                                      }
+                                      title="Play word audio"
+                                      aria-label={`Play word audio: ${word}`}
+                                    >
+                                      {word}
+                                    </button>
+                                  ) : (
+                                    <span>{word}</span>
+                                  )}
+                                  {i < nowVerseWords.length - 1
+                                    ? "\u00A0"
+                                    : null}
+                                </span>
+                              ))
+                            : highlightedTrack.text}
+                        </p>
+                      );
+                    })()
                   ) : (
                     <p className="text-xs">No ayah selected yet.</p>
                   )}
