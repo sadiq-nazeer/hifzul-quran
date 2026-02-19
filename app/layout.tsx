@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/Header";
 import { PwaRegister } from "@/components/PwaRegister";
@@ -26,7 +26,6 @@ export const metadata: Metadata = {
     "An immersive memorization and recitation coach built with Quran.Foundation APIs.",
   metadataBase: new URL("https://quranic-practice.local"),
   manifest: "/manifest.webmanifest",
-  themeColor: "#0b0f0e",
   appleWebApp: {
     capable: true,
     title: "HifzDeen",
@@ -44,6 +43,10 @@ export const metadata: Metadata = {
     description:
       "Interactive memorization and reflection journeys for the Quran.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0b0f0e",
 };
 
 export default function RootLayout({
