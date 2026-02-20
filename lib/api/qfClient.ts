@@ -79,6 +79,9 @@ type RawWord = {
   id: number;
   position?: number;
   text_uthmani?: string;
+  text_uthmani_simple?: string;
+  text_imlaei_simple?: string;
+  text_imlaei?: string;
   audio_url?: string | null;
   char_type_name?: string;
 };
@@ -355,7 +358,12 @@ const mapVerse = (raw: RawVerse): VerseText => ({
       if (!word || typeof word.id !== "number") {
         return undefined;
       }
-      const text = pickText(word.text_uthmani);
+      const text = pickText(
+        word.text_uthmani_simple,
+        word.text_uthmani,
+        word.text_imlaei_simple,
+        word.text_imlaei,
+      );
       if (!text) {
         return undefined;
       }
