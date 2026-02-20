@@ -15,6 +15,7 @@
     "analyze": "ANALYZE=1 next build"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.6.1",
     "lucide-react": "^0.564.0",
     "next": "^16.1.6",
     "react": "19.2.0",

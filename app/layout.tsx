@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Header } from "@/components/Header";
 import { PwaRegister } from "@/components/PwaRegister";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -72,6 +73,7 @@ export default function RootLayout({
             <div className="pt-14 sm:pt-16">{children}</div>
           </div>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
