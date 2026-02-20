@@ -63,7 +63,7 @@ export default function RootLayout({
         <PwaRegister />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('hifzdeen-theme');var a=localStorage.getItem('hifzdeen-accent');var r=t==='light'?'light':'dark';document.documentElement.setAttribute('data-theme',r);document.documentElement.setAttribute('data-accent',a||'green');})();`,
+            __html: `(function(){var t=localStorage.getItem('hifzdeen-theme');var a=localStorage.getItem('hifzdeen-accent');var r=t==='dark'?'dark':'light';document.documentElement.setAttribute('data-theme',r);document.documentElement.setAttribute('data-accent',a||'green');})();`,
           }}
         />
         <ThemeProvider>

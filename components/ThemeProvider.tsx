@@ -33,7 +33,7 @@ function applyTheme(resolved: "light" | "dark", accent: AccentColor) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>("dark");
+  const [mode, setModeState] = useState<ThemeMode>("light");
   const [accent, setAccentState] = useState<AccentColor>("green");
   const [mounted, setMounted] = useState(false);
   const resolved = resolveTheme(mode);

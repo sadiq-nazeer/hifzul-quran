@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
-/* Default: dark theme + green accent (before JS or when no preference) */
+/* Default: light theme + green accent (before JS or when no preference) */
 :root {
-  color-scheme: dark;
-  --background: #020617;
-  --surface-muted: #0f172a;
-  --surface-raised: #111827;
-  --surface-highlight: #1e293b;
-  --text-primary: #f8fafc;
-  --text-muted: #cbd5e1;
-  --brand-primary: #22c55e;
-  --brand-accent: #4ade80;
+  color-scheme: light;
+  --background: #f8fafc;
+  --surface-muted: #e2e8f0;
+  --surface-raised: #ffffff;
+  --surface-highlight: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-muted: #475569;
+  --brand-primary: #16a34a;
+  --brand-accent: #22c55e;
   --focus-ring: #fcd34d;
 }
 

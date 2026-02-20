@@ -24,10 +24,10 @@ export const THEME_STORAGE_KEY = "hifzdeen-theme";
 export const ACCENT_STORAGE_KEY = "hifzdeen-accent";
 
 export function getStoredTheme(): ThemeMode {
-  if (typeof window === "undefined") return "dark";
+  if (typeof window === "undefined") return "light";
   const v = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (v === "light" || v === "dark") return v;
-  return "dark";
+  return "light";
 }
 
 export function getStoredAccent(): AccentColor {
